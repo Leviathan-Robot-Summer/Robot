@@ -18,4 +18,6 @@ Controls the can tipping mechanism
 
 Controls the lowering of the robot with a feedback loop depending on distance
 
-**MAIN CONTROLS**
+## Main Controls
+
+High Level Alogrithm
