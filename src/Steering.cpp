@@ -15,9 +15,11 @@ class Motor {
             rev = rev;
         }
 
-        Motor() {
-            fwd = PA_3;
-            rev = PA_6;
+        Motor() {}
+
+        void set_pins(PinName fwd_pin, PinName rev_pin) {
+            fwd = fwd_pin;
+            rev = rev_pin;
         }
 
         void increase(int value) {
@@ -38,15 +40,17 @@ class Steering {
 
     public:
         Steering(PinName left_fwd, PinName left_rev, PinName right_fwd, PinName right_rev) {
-            left(left_fwd, left_rev);
+            left.set_pins(left_fwd, left_rev);
+            right.set_pins(right_fwd, right_rev);
+            //left(left_fwd, left_rev);
             //left = &left_mot;
-            right(right_fwd, right_rev);
+            //right(right_fwd, right_rev);
             //right = &right_mot;
         };
 
         void start() {
-            *left.increase(0);
-            *right.increase(0);
+            left.increase(0);
+            right.increase(0);
         }
 
         /*
