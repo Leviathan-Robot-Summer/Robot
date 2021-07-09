@@ -2,7 +2,7 @@
 #include <Arduino.h>
 
 #define MOTORFREQ 1000
-#define BASESPEED 2500
+#define BASESPEED 2300
 
 class Motor {
     PinName fwd;
@@ -22,7 +22,8 @@ class Motor {
             rev = rev_pin;
         }
 
-        void increase(int value) {
+        void increase(int percent) {
+            int value = percent * pwm_constant;
             if (value >= 0) {
                 pwm_start(fwd, MOTORFREQ, BASESPEED + value, RESOLUTION_12B_COMPARE_FORMAT);
                 pwm_start(rev, MOTORFREQ, 0, RESOLUTION_12B_COMPARE_FORMAT);
@@ -58,11 +59,22 @@ class Steering {
         */
         void steer(int amount) {
             if (amount > 0) {
-                right.increase(amount * 10);
-                left.increase(0);
+                if (amount <= 100) {
+                    right.increase(amount);
+                    left.increase(0);    
+                } else {
+                    right.increase(100);
+                    left.increase(100-amount);
+                }
+                
             } else {
-                right.increase(0);
-                left.increase(amount * 10);
+                if (amount >= -100) {
+                    left.increase(amount);
+                    right.increase(0);    
+                } else {
+                    left.increase(100);
+                    right.increase(100-amount);
+                } 
             }
         }
 };

@@ -34,12 +34,18 @@ void setup() {
   pinMode(right_rev, OUTPUT);
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
   display.display();
-  delay(2000);
   reset_display();
   display.println("Hello world!");
   display.display();
 
   wheels.start();
+  for (int i = 50; i < 300; i = i + 50) {
+    wheels.steer(i);
+    reset_display();
+    display.println(i);
+    display.display();
+    delay(2000);
+  }
 }
 
 void loop() {
