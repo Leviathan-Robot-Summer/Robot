@@ -23,6 +23,7 @@ class Motor {
         }
 
         void increase(int value) {
+
             if (value >= 0) {
                 pwm_start(fwd, MOTORFREQ, BASESPEED + value, RESOLUTION_12B_COMPARE_FORMAT);
                 pwm_start(rev, MOTORFREQ, 0, RESOLUTION_12B_COMPARE_FORMAT);
@@ -58,11 +59,11 @@ class Steering {
         */
         void steer(int amount) {
             if (amount > 0) {
-                right.increase(amount * 10);
+                right.increase(amount);
                 left.increase(0);
             } else {
                 right.increase(0);
-                left.increase(amount * 10);
+                left.increase(-amount);
             }
         }
 };

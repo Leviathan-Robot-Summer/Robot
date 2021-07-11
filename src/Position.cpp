@@ -28,8 +28,8 @@ class Position {
         int right_sens;
         int x;
         int no_change = 0; //Stores how long there has been no change for
-        boolean r;
-        boolean l;
+        bool r;
+        bool l;
         
     
         Position(int left_sensor, int right_sensor) {

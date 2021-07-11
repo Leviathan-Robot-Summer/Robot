@@ -34,7 +34,6 @@ void setup() {
   pinMode(right_rev, OUTPUT);
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
   display.display();
-  delay(2000);
   reset_display();
   display.println("Hello world!");
   display.display();
