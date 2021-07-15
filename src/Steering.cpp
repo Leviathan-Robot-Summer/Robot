@@ -2,12 +2,18 @@
 #include <Arduino.h>
 
 #define MOTORFREQ 1000
-#define BASESPEED 2300
+#define BASESPEED 1500
+#define MOTOR_MAX 4096
+#define MOTOR_MIN 2500 
+
+#define NORMAL_PWR 10
 
 class Motor {
-    PinName fwd;
-    PinName rev;
-    int pwm_constant = 1000 / 100; // MAX pwm divided by percentage
+    private:
+        PinName fwd;
+        PinName rev;
+        int pwm_constant = (MOTOR_MAX - MOTOR_MIN) / 100; // MAX pwm divided by percentage
+
 
     public:
         Motor(PinName fwd, PinName rev) {
@@ -22,15 +28,23 @@ class Motor {
             rev = rev_pin;
         }
 
-        void increase(int percent) {
-            int value = percent * pwm_constant;
-            if (value >= 0) {
-                pwm_start(fwd, MOTORFREQ, BASESPEED + value, RESOLUTION_12B_COMPARE_FORMAT);
+        void power(int power) { //+ is forward and - is reverse in range [-100, 100]
+            if (power > 100) {power = 100;}
+            if (power < -100) {power = -100;}
+            if (power > 0) {
+                pwm_start(fwd, MOTORFREQ, MOTOR_MIN + power * pwm_constant, RESOLUTION_12B_COMPARE_FORMAT);
                 pwm_start(rev, MOTORFREQ, 0, RESOLUTION_12B_COMPARE_FORMAT);
+            } else if (power < 0) {
+                pwm_start(fwd, MOTORFREQ, 0, RESOLUTION_12B_COMPARE_FORMAT);
+                pwm_start(rev, MOTORFREQ, MOTOR_MIN - power * pwm_constant, RESOLUTION_12B_COMPARE_FORMAT);
             } else {
-                pwm_start(fwd, MOTORFREQ, BASESPEED - value, RESOLUTION_12B_COMPARE_FORMAT);
-                pwm_start(rev, MOTORFREQ, 0, RESOLUTION_12B_COMPARE_FORMAT);
+                stop();
             }
+        }
+
+        void stop() {
+            pwm_start(fwd, MOTORFREQ, 0, RESOLUTION_12B_COMPARE_FORMAT);
+            pwm_start(rev, MOTORFREQ, 0, RESOLUTION_12B_COMPARE_FORMAT);
         }
 };
 
@@ -49,32 +63,32 @@ class Steering {
             //right = &right_mot;
         };
 
+        Steering() {}
+
+        void setPins(PinName left_fwd, PinName left_rev, PinName right_fwd, PinName right_rev) {
+            left.set_pins(left_fwd, left_rev);
+            right.set_pins(right_fwd, right_rev);
+            //left(left_fwd, left_rev);
+            //left = &left_mot;
+            //right(right_fwd, right_rev);
+            //right = &right_mot;
+        };
+
         void start() {
-            left.increase(0);
-            right.increase(0);
+            left.power(NORMAL_PWR);
+            right.power(NORMAL_PWR);
         }
 
         /*
         amount -100 to 100 negatives are to go left and positives are to go right
         */
         void steer(int amount) {
-            if (amount > 0) {
-                if (amount <= 100) {
-                    right.increase(amount);
-                    left.increase(0);    
-                } else {
-                    right.increase(100);
-                    left.increase(100-amount);
-                }
-                
-            } else {
-                if (amount >= -100) {
-                    left.increase(amount);
-                    right.increase(0);    
-                } else {
-                    left.increase(100);
-                    right.increase(100-amount);
-                } 
-            }
+            right.power(NORMAL_PWR + amount);
+            left.power(NORMAL_PWR - amount);                   
+        }
+
+        void stop() {
+            left.stop();
+            right.stop();
         }
 };

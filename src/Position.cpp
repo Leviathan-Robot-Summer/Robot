@@ -1,10 +1,11 @@
 #include <stdio.h>
 #include <Arduino.h>
 #include <algorithm>
+#include <Adafruit_SSD1306.h>
 
-#define THRESHOLD 400
+#define THRESHOLD 550
 #define SEPERATION 7
-#define HISTORY_LEN 100
+#define HISTORY_LEN 1000
 
 
 class Position {
@@ -30,12 +31,20 @@ class Position {
         int no_change = 0; //Stores how long there has been no change for
         bool r;
         bool l;
+        int last;
         
     
         Position(int left_sensor, int right_sensor) {
             right_sens = right_sensor;
             left_sens = left_sensor;
         };
+
+        Position() {};
+
+        void setSensors(int left_sensor, int right_sensor) {
+            right_sens = right_sensor;
+            left_sens = left_sensor;
+        }
 
         int read() {
             r = analogRead(right_sens) > THRESHOLD;
@@ -47,9 +56,9 @@ class Position {
             } else if (l) {
                 x = -1;
             } else {
-                if (history[current_index] > 0) {
+                if (last > 0) {
                     x = SEPERATION;
-                } else if (history[current_index] < 0) {
+                } else if (last < 0) {
                     x = -SEPERATION;
                 } else {
                     x = 100;  //TODO Always turn left?
@@ -61,7 +70,12 @@ class Position {
                 no_change = 0; 
             }
             addToHistory(x);
+            last = x;
             return x;
+        }
+        void showLR(Adafruit_SSD1306 display) {
+            display.println(r);
+            display.println(l);
         }
 
         int getXValue() {
