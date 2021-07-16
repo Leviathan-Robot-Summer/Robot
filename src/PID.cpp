@@ -7,16 +7,11 @@
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
 #define OLED_RESET 	-1 // This display does not have a reset pin accessible
 
-#include "Position.cpp"
-#include "Steering.cpp"
+#include "Position.hpp"
+#include "Steering.hpp"
 
 #define GOAL 0
 #define maxI 200
-
-
-
-
-
 
 class TapeFollowing {
     int d, p, i, x, g, error = 0;
