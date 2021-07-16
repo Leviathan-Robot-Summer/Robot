@@ -7,7 +7,6 @@
 #define MOTOR_MIN 2500 
 
 #define NORMAL_PWR 10
-
 class Motor {
     private:
         PinName fwd;

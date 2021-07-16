@@ -33,15 +33,16 @@ class TapeFollowing {
 
         void followTape() {
             kp = analogRead(PA7) / 10;
-            ki = analogRead(PB0) / 10;
+            ki = 0; //analogRead(PB0) / 10;
             kd = analogRead(PB1) / 10;
             x = pos.getXValue();
             error = x;
             p = kp * error;
-            d = kd*(error - lasterr);
+            d = kd*pos.getDerivative();
             i += ki *error;
-            if (i > maxI){ i = maxI;}
-            if (i < -1*maxI){i = -maxI;}
+            i = 0;
+            //if (i > maxI){ i = maxI;}
+            //if (i < -1*maxI){i = -maxI;}
             g = p + d + i;
             lasterr = error;
             
@@ -51,9 +52,9 @@ class TapeFollowing {
         void showValues(Adafruit_SSD1306 display) {
             display.println(x);
             display.println(error);
-            display.println(kp);
-            display.println(ki);
+            display.println(p);
             display.println(kd);
+            display.println(d);
             display.println(g);
             pos.showLR(display);
         }

@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <Adafruit_SSD1306.h>
 
-#define THRESHOLD 550
+#define THRESHOLD 500
 #define SEPERATION 7
 #define HISTORY_LEN 1000
 
@@ -52,9 +52,9 @@ class Position {
             if (r && l) {
                 x = 0;
             } else if (r) {
-                x = 1;
+                x = 2;
             } else if (l) {
-                x = -1;
+                x = -2;
             } else {
                 if (last > 0) {
                     x = SEPERATION;
@@ -84,9 +84,9 @@ class Position {
 
         int getDerivative() {
             if (current_index < no_change + 1) {   
-                return (x - history[HISTORY_LEN + current_index - no_change - 1]) * 10 / no_change;
+                return (x - history[HISTORY_LEN + current_index - no_change - 1]) / no_change;
             } else {
-                return (x - history[current_index - no_change - 1]) * 10/ no_change;
+                return (x - history[current_index - no_change - 1]) / no_change;
             }  
 
         }
