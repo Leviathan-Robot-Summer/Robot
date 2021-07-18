@@ -11,7 +11,7 @@
 #include "Steering.cpp"
 
 #define GOAL 0
-#define maxI 200
+#define maxI 0
 
 
 
@@ -51,12 +51,12 @@ class TapeFollowing {
 
         void showValues(Adafruit_SSD1306 display) {
             display.println(x);
-            display.println(error);
             display.println(p);
-            display.println(kd);
             display.println(d);
             display.println(g);
+            Wheels.showPower(display);
             pos.showLR(display);
+            
         }
 
         void stop() {

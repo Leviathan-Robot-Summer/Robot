@@ -1,10 +1,11 @@
 #include <stdio.h>
 #include <Arduino.h>
+#include <Adafruit_SSD1306.h>
 
 #define MOTORFREQ 1000
 #define BASESPEED 1500
 #define MOTOR_MAX 4096
-#define MOTOR_MIN 2500 
+#define MOTOR_MIN 2750 
 
 #define NORMAL_PWR 10
 class Motor {
@@ -12,6 +13,7 @@ class Motor {
         PinName fwd;
         PinName rev;
         int pwm_constant = (MOTOR_MAX - MOTOR_MIN) / 100; // MAX pwm divided by percentage
+        int pwr = NORMAL_PWR;
 
 
     public:
@@ -44,6 +46,10 @@ class Motor {
         void stop() {
             pwm_start(fwd, MOTORFREQ, 0, RESOLUTION_12B_COMPARE_FORMAT);
             pwm_start(rev, MOTORFREQ, 0, RESOLUTION_12B_COMPARE_FORMAT);
+        }
+
+        int getPower() {
+            return pwr;
         }
 };
 
@@ -89,5 +95,10 @@ class Steering {
         void stop() {
             left.stop();
             right.stop();
+        }
+
+        void showPower(Adafruit_SSD1306 display) {
+            display.println(left.getPower());
+            display.println(right.getPower());
         }
 };

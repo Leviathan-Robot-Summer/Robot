@@ -3,13 +3,14 @@
 #include <algorithm>
 #include <Adafruit_SSD1306.h>
 
-#define THRESHOLD 500
+#define THRESHOLD 525
 #define SEPERATION 7
 #define HISTORY_LEN 1000
 
 
 class Position {
     int history [HISTORY_LEN];
+    int last_state;
     int current_index = 0;
     //TODO NEED TO WORK ON HISTORY FOR DERIVATIVE
 
@@ -29,8 +30,8 @@ class Position {
         int right_sens;
         int x;
         int no_change = 0; //Stores how long there has been no change for
-        bool r;
-        bool l;
+        bool r, l;
+        int rr, rl;
         int last;
         
     
@@ -47,8 +48,10 @@ class Position {
         }
 
         int read() {
-            r = analogRead(right_sens) > THRESHOLD;
-            l = analogRead(left_sens) > THRESHOLD;
+            rl = analogRead(left_sens);
+            rr = analogRead(right_sens);
+            r = rr > THRESHOLD;
+            l = rl > THRESHOLD;
             if (r && l) {
                 x = 0;
             } else if (r) {
@@ -64,18 +67,19 @@ class Position {
                     x = 100;  //TODO Always turn left?
                 }
             }
-            if (x == history[current_index]) {
+            if (x == last) {
                 no_change++; //used for derivative so when the value changes we get a sharp spike then
             } else {         //it inversely decays
-                no_change = 0; 
+                no_change = 0;
+                last_state = last;
             }
-            addToHistory(x);
+            //addToHistory(x);
             last = x;
             return x;
         }
         void showLR(Adafruit_SSD1306 display) {
-            display.println(r);
-            display.println(l);
+            display.println(rr);
+            display.println(rl);
         }
 
         int getXValue() {
@@ -83,12 +87,7 @@ class Position {
         }
 
         int getDerivative() {
-            if (current_index < no_change + 1) {   
-                return (x - history[HISTORY_LEN + current_index - no_change - 1]) / no_change;
-            } else {
-                return (x - history[current_index - no_change - 1]) / no_change;
-            }  
-
+            return ((x - last_state) * 2) / no_change;
         }
 };
         
