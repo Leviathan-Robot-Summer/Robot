@@ -35,7 +35,7 @@ class Motor {
             if (power > 100) {power = 100;}
             if (power < -100) {power = -100;}
             stop();
-            delay(5);
+           // delay(5);
             if (power > 0) {
                 pwm_start(fwd, MOTORFREQ, MOTOR_MIN + power * pwm_constant, RESOLUTION_12B_COMPARE_FORMAT);
             } else if (power < 0) {

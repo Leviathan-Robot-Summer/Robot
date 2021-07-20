@@ -16,8 +16,8 @@
 #define LEFT_IR PA4
 #define right_fwd PA_1
 #define right_rev PA_2
-#define left_fwd PA_8
-#define left_rev PA_9
+#define left_fwd PA_3
+#define left_rev PA_6
 #define built_in_LED PC13 //????
 
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
