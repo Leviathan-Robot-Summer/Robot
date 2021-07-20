@@ -16,12 +16,13 @@
 #define LEFT_IR PA4
 #define right_fwd PA_1
 #define right_rev PA_2
-#define left_fwd PA_3
-#define left_rev PA_6
+#define left_fwd PA_8
+#define left_rev PA_9
 #define built_in_LED PC13 //????
 
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 TapeFollowing pid(left_fwd, left_rev, right_fwd, right_rev, LEFT_IR, RIGHT_IR);
+int count = 0;
 
 
 //Steering wheels(left_fwd, left_rev, right_fwd, right_rev);
@@ -50,18 +51,19 @@ void setup() {
 }
 
 void loop() {
-  for (int j = 0; j < 10000; j++) {
-    pid.followTape();
-    if (j % 1000 == 0) {
-      digitalWrite(built_in_LED, HIGH);
-    } else if (j % 1000 == 500) {
-      digitalWrite(built_in_LED, LOW);
-    }
-    if (j % 100 == 0) {
-      reset_display();
-      display.println(j);
-      pid.showValues(display);
-      display.display();
-    }
+  
+  pid.followTape();
+  
+  if (count % 1000 == 0) {
+    digitalWrite(built_in_LED, HIGH);
+  } else if (count % 1000 == 500) {
+    digitalWrite(built_in_LED, LOW);
   }
+  if (count % 100 == 0) {
+    reset_display();
+    display.println(count / 100);
+    pid.showValues(display);
+    display.display();
+  }
+  count++;
 }

@@ -9,12 +9,12 @@
 
 
 class Position {
-    int history [HISTORY_LEN];
+    //int history [HISTORY_LEN];
     int last_state;
     int current_index = 0;
     //TODO NEED TO WORK ON HISTORY FOR DERIVATIVE
 
-    void addToHistory(int x) {
+    /*void addToHistory(int x) {
         if (current_index >= HISTORY_LEN){
             current_index = 0;
             
@@ -23,7 +23,7 @@ class Position {
         }
 
         history[current_index] = x;
-    }
+    }*/
 
     public:
         int left_sens;

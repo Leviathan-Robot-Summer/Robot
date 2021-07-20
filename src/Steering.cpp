@@ -8,6 +8,8 @@
 #define MOTOR_MIN 2750 
 
 #define NORMAL_PWR 10
+#define MAX_PWR_FWD 50
+
 class Motor {
     private:
         PinName fwd;
@@ -32,15 +34,14 @@ class Motor {
         void power(int power) { //+ is forward and - is reverse in range [-100, 100]
             if (power > 100) {power = 100;}
             if (power < -100) {power = -100;}
+            stop();
+            delay(5);
             if (power > 0) {
                 pwm_start(fwd, MOTORFREQ, MOTOR_MIN + power * pwm_constant, RESOLUTION_12B_COMPARE_FORMAT);
-                pwm_start(rev, MOTORFREQ, 0, RESOLUTION_12B_COMPARE_FORMAT);
             } else if (power < 0) {
-                pwm_start(fwd, MOTORFREQ, 0, RESOLUTION_12B_COMPARE_FORMAT);
                 pwm_start(rev, MOTORFREQ, MOTOR_MIN - power * pwm_constant, RESOLUTION_12B_COMPARE_FORMAT);
-            } else {
-                stop();
             }
+            pwr = power;
         }
 
         void stop() {
@@ -89,7 +90,23 @@ class Steering {
         */
         void steer(int amount) {
             right.power(NORMAL_PWR + amount);
-            left.power(NORMAL_PWR - amount);                   
+            left.power(NORMAL_PWR - amount);  
+        }
+
+        bool increaseFwdSpeed() {
+            bool increased = false;
+            if (right.getPower() == left.getPower()) {
+                if (left.getPower() < MAX_PWR_FWD) {
+                    left.power(1 + left.getPower());
+                    right.power(1 + right.getPower());
+                }
+                increased = true;
+            }
+            return increased;
+        }           
+        
+        int direction() {
+            return left.getPower() - right.getPower();
         }
 
         void stop() {

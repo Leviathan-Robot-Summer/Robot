@@ -15,9 +15,6 @@
 
 
 
-
-
-
 class TapeFollowing {
     int d, p, i, x, g, error = 0;
     int kp, ki, kd;
@@ -45,7 +42,12 @@ class TapeFollowing {
             //if (i < -1*maxI){i = -maxI;}
             g = p + d + i;
             lasterr = error;
-            
+            /*if (g != 0) {Wheels.steer(g);}
+            else if (Wheels.direction() == 0) {
+                if (pos.no_change % 100 == 0) {
+                    Wheels.increaseFwdSpeed();
+                }
+            } else {Wheels.stop();}*/
             Wheels.steer(g);
         }
 
@@ -55,7 +57,7 @@ class TapeFollowing {
             display.println(d);
             display.println(g);
             Wheels.showPower(display);
-            pos.showLR(display);
+            //pos.showLR(display);
             
         }
 
