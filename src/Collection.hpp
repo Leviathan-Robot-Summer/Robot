@@ -19,4 +19,6 @@ class Collection {
         void checkPin();
 
         int getCanAmount();
+
+        void switchLower();
 };

@@ -2,8 +2,8 @@
 #include <Servo.h>
 #include "Collection.hpp"
 
-#define LOWER_ANGLE 10
-#define HIGHER_ANGLE 40
+#define UPPER_LEVEL 75
+#define LOWER_LEVEL 120
 
 // Constructor initializes numberOfCans to 0 and assigns pins for the servo
 // and microswitch.
@@ -15,7 +15,7 @@ Collection::Collection(int CAN_COUNTER, int SERVO_CAN_SORTER) {
 
 void Collection::begin() {
     sortingFlap.attach(servoPin);
-    sortingFlap.write(15);
+    sortingFlap.write(UPPER_LEVEL);
 }
 
 // This function is run as an interrupt from setup each time the microswitch for 
@@ -24,10 +24,14 @@ void Collection::begin() {
 void Collection::checkPin() {
     numberOfCans++;
     if (numberOfCans >= 3) {
-        sortingFlap.write(45);
+        sortingFlap.write(LOWER_LEVEL);
     }
 }
 
 int Collection::getCanAmount() {
     return numberOfCans;
+}
+
+void Collection::switchLower() {
+    sortingFlap.write(LOWER_LEVEL);
 }

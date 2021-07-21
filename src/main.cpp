@@ -17,6 +17,7 @@
 #define left_rev PB_1
 #define CAN_COUNTER PB5
 #define SERVO_CAN_SORTER PA0 //servos must be on TIMER2 pins
+#define CAN_SWITCH PA8
 
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 TapeFollowing pid(left_fwd, left_rev, right_fwd, right_rev, LEFT_IR, RIGHT_IR);
@@ -41,7 +42,8 @@ void setup() {
   pinMode(left_rev, OUTPUT);
   pinMode(right_fwd, OUTPUT);
   pinMode(right_rev, OUTPUT);
-  pinMode(CAN_COUNTER, INPUT_PULLDOWN);
+  pinMode(CAN_COUNTER, INPUT_PULLUP);
+  pinMode(CAN_SWITCH, INPUT_PULLUP);
   
   
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
@@ -66,5 +68,7 @@ void loop() {
   reset_display();
   display.println(analogRead(PA7));
   display.display();
-  delay(5000);
+  if (!digitalRead(CAN_SWITCH)){
+    collection.switchLower();
+  }
 }
