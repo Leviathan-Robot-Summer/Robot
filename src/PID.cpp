@@ -11,7 +11,13 @@
 #include "Steering.hpp"
 
 #define GOAL 0
+<<<<<<< HEAD
 #define maxI 200
+=======
+#define maxI 0
+
+
+>>>>>>> c59b99a9be90c772d4a25454252321d1482329cb
 
 class TapeFollowing {
     int d, p, i, x, g, error = 0;
@@ -27,30 +33,36 @@ class TapeFollowing {
         };
 
         void followTape() {
-            kp = analogRead(PA7) / 10;
-            ki = analogRead(PB0) / 10;
+            kp = 5;//analogRead(PA7) / 10;
+            ki = 0; //analogRead(PB0) / 10;
             kd = analogRead(PB1) / 10;
             x = pos.getXValue();
             error = x;
             p = kp * error;
-            d = kd*(error - lasterr);
+            d = kd*pos.getDerivative();
             i += ki *error;
-            if (i > maxI){ i = maxI;}
-            if (i < -1*maxI){i = -maxI;}
+            i = 0;
+            //if (i > maxI){ i = maxI;}
+            //if (i < -1*maxI){i = -maxI;}
             g = p + d + i;
             lasterr = error;
-            
+            /*if (g != 0) {Wheels.steer(g);}
+            else if (Wheels.direction() == 0) {
+                if (pos.no_change % 100 == 0) {
+                    Wheels.increaseFwdSpeed();
+                }
+            } else {Wheels.stop();}*/
             Wheels.steer(g);
         }
 
         void showValues(Adafruit_SSD1306 display) {
             display.println(x);
-            display.println(error);
-            display.println(kp);
-            display.println(ki);
-            display.println(kd);
+            display.println(p);
+            display.println(d);
             display.println(g);
-            pos.showLR(display);
+            Wheels.showPower(display);
+            //pos.showLR(display);
+            
         }
 
         void stop() {
