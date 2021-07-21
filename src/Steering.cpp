@@ -5,7 +5,7 @@
 #define MOTORFREQ 1000
 #define BASESPEED 1500
 #define MOTOR_MAX 4096
-#define MOTOR_MIN 2750 
+#define MOTOR_MIN 2100
 
 #define NORMAL_PWR 10
 #define MAX_PWR_FWD 50

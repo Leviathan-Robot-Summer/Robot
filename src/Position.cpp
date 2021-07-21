@@ -75,7 +75,7 @@ class Position {
             }
             //addToHistory(x);
             last = x;
-            return x;
+           return x;
         }
         void showLR(Adafruit_SSD1306 display) {
             display.println(rr);
