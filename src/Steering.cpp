@@ -3,6 +3,7 @@
 #include "Steering.hpp"
 
 #define NORMAL_PWR 10
+#define MAX_PWR_FWD 50
 
 Steering::Steering(PinName left_fwd, PinName left_rev, PinName right_fwd, PinName right_rev) {
     left.set_pins(left_fwd, left_rev);
@@ -42,3 +43,23 @@ void Steering::stop() {
     right.stop();
 }
 
+bool Steering::increaseFwdSpeed() {
+    bool increased = false;
+        if (right.getPower() == left.getPower()) {
+            if (left.getPower() < MAX_PWR_FWD) {
+                left.power(1 + left.getPower());
+                right.power(1 + right.getPower());
+            }
+            increased = true;
+        }
+    return increased;
+}
+
+int Steering::direction() {
+    return left.getPower() - right.getPower();
+}
+
+void Steering::showPower(Adafruit_SSD1306 display) {
+    display.println(left.getPower());
+    display.println(right.getPower());
+}

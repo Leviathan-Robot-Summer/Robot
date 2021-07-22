@@ -4,7 +4,7 @@
 #include <Adafruit_SSD1306.h>
 #include "Position.hpp"
 
-#define THRESHOLD 550
+#define THRESHOLD 525
 #define SEPERATION 7
 #define HISTORY_LEN 1000
 
@@ -37,14 +37,16 @@ void Position::setSensors(int left_sensor, int right_sensor) {
 }
 
 int Position::read() {
-    r = analogRead(right_sens) > THRESHOLD;
-    l = analogRead(left_sens) > THRESHOLD;
+    rl = analogRead(left_sens);
+    rr = analogRead(right_sens);
+    r = rr > THRESHOLD;
+    l = rl > THRESHOLD;
     if (r && l) {
         x = 0;
     } else if (r) {
-        x = 1;
+        x = 2;
     } else if (l) {
-        x = -1;
+        x = -2;
     } else {
         if (last > 0) {
             x = SEPERATION;
@@ -54,18 +56,19 @@ int Position::read() {
             x = 100;  //TODO Always turn left?
         }
     }
-    if (x == history[current_index]) {
+    if (x == last) {
         no_change++; //used for derivative so when the value changes we get a sharp spike then
     } else {         //it inversely decays
-        no_change = 0; 
+        no_change = 0;
+        last_state = last;
     }
-    addToHistory(x);
+    //addToHistory(x);
     last = x;
     return x;
 }
 void Position::showLR(Adafruit_SSD1306 display) {
-    display.println(r);
-    display.println(l);
+    display.println(rr);
+    display.println(rl);
 }
 
 int Position::getXValue() {
@@ -73,10 +76,7 @@ int Position::getXValue() {
 }
 
 int Position::getDerivative() {
-    if (current_index < no_change + 1) {   
-        return (x - history[HISTORY_LEN + current_index - no_change - 1]) * 10 / no_change;
-    } else {
-        return (x - history[current_index - no_change - 1]) * 10/ no_change;
-    }  
-
+    return ((x - last_state) * 2) / no_change;
 }
+
+//test comment

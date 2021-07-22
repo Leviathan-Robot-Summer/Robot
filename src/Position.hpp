@@ -4,6 +4,7 @@
 
 class Position {
 
+    int last_state;
     int history [HISTORY_LEN];
     int current_index;
 
@@ -14,8 +15,8 @@ class Position {
         int right_sens;
         int x;
         int no_change; //Stores how long there has been no change for
-        bool r;
-        bool l;
+        bool r, l;
+        int rr, rl;
         int last;
 
         Position(int left_sensor, int right_sensor);
