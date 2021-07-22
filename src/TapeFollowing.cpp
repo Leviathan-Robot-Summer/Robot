@@ -17,30 +17,36 @@ TapeFollowing::TapeFollowing(PinName left_fwd, PinName left_rev, PinName right_f
 }
 
 void TapeFollowing::followTape() {
-    kp = analogRead(PA7) / 10;
-    ki = analogRead(PB0) / 10;
+    kp = 5;//analogRead(PA7) / 10;
+    ki = 0; //analogRead(PB0) / 10;
     kd = analogRead(PB1) / 10;
     x = pos.getXValue();
     error = x;
     p = kp * error;
-    d = kd*(error - lasterr);
+    d = kd*pos.getDerivative();
     i += ki *error;
-    if (i > maxI){ i = maxI;}
-    if (i < -1*maxI){i = -maxI;}
+    i = 0;
+    //if (i > maxI){ i = maxI;}
+    //if (i < -1*maxI){i = -maxI;}
     g = p + d + i;
     lasterr = error;
-    
+    /*if (g != 0) {Wheels.steer(g);}
+    else if (Wheels.direction() == 0) {
+        if (pos.no_change % 100 == 0) {
+            Wheels.increaseFwdSpeed();
+        }
+    } else {Wheels.stop();}*/
     Wheels.steer(g);
 }
 
 void TapeFollowing::showValues(Adafruit_SSD1306 display) {
     display.println(x);
-    display.println(error);
-    display.println(kp);
-    display.println(ki);
-    display.println(kd);
+    display.println(p);
+    display.println(d);
     display.println(g);
-    pos.showLR(display);
+    Wheels.showPower(display);
+    //pos.showLR(display);
+    
 }
 
 void TapeFollowing::stop() {
