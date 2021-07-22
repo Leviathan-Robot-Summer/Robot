@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include "Motor.hpp"
+#include <Adafruit_SSD1306.h>
 
 #define NORMAL_PWR 10
 
@@ -20,5 +21,11 @@ class Steering {
         */
         void steer(int amount);
 
+        bool increaseFwdSpeed();
+
+        int direction();
+
         void stop();
+
+        void showPower(Adafruit_SSD1306 display);
 };
