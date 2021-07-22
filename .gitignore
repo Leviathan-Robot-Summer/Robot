@@ -4,3 +4,5 @@
 .vscode/launch.json
 .vscode/ipch
 .ini
+.vs/
+workspace.code-workspace

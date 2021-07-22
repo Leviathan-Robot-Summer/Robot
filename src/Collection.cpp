@@ -2,8 +2,8 @@
 #include <Servo.h>
 #include "Collection.hpp"
 
-#define UPPER_LEVEL 75
-#define LOWER_LEVEL 120
+#define UPPER_LEVEL 45 
+#define LOWER_LEVEL 80 //35 degrees more than UPPER_LEVEL
 
 // Constructor initializes numberOfCans to 0 and assigns pins for the servo
 // and microswitch.
