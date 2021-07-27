@@ -14,6 +14,7 @@
  */
 class Position {
     int last_state;
+    int last_state_length;
     int current_index = 0;
     
     public:
@@ -23,8 +24,9 @@ class Position {
         int no_change = 0; //Stores how long there has been no change for
         bool r, l; // Binary interpretations of the left and right sensors
         int rr, rl; // Read values directly from the sensor
-        int last; // The previous value of x (last != x)
+        int last; // value of x from the previous time read was run
         
+
         /** Creates a new position object and assigns @param left_sensor and @param right_sensor pin to 
          * this object's left and right sensors respectively
          * 
@@ -35,11 +37,13 @@ class Position {
             left_sens = left_sensor;
         };
 
+
         /** Initializes a new position object  without and variables assigned
          *  
          *  @author Lukas
          */
         Position() {};
+
 
         /** Assigns @param left_sensor and @param right_sensor pin to this object's left and right sensors respectively
          *  
@@ -49,6 +53,7 @@ class Position {
             right_sens = right_sensor;
             left_sens = left_sensor;
         }
+
 
         /** Reads from the sensors and returns an x value
          *  
@@ -77,12 +82,14 @@ class Position {
             if (x == last) {
                 no_change++; //used for derivative so when the value changes we get a sharp spike then
             } else {         //it inversely decays
-                no_change = 0;
                 last_state = last;
+                last_state_length = no_change;
+                no_change = 0;
             }
             last = x;
             return x;
         }
+
 
         /** Prints the right and left reading values to the given display
          *  
@@ -94,6 +101,7 @@ class Position {
             display.println(rl);
         }
 
+
         /** Returns the X value of the sensors
          *  
          *  @author Lukas
@@ -102,13 +110,14 @@ class Position {
             return read();
         }
 
+
         /** Returns the approximated derivative of x
          *  change last change in x divided by how many times that and the previous reading have been read continously 
          *  
          *  @author Lukas
          */
         int getDerivative() {
-            return ((x - last_state)) / no_change;
+            return ((x - last_state)) / (no_change + last_state_length);
         }
 };
         
