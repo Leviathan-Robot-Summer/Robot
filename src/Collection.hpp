@@ -18,7 +18,9 @@ class Collection {
         // flap once numberOfCans >= 3.
         void checkPin();
 
+        void returnToNormal();
+
         int getCanAmount();
 
-        void switchLower();
+        void switchManually(int selection);
 };

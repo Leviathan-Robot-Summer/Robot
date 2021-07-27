@@ -3,7 +3,6 @@
 #include <Adafruit_SSD1306.h>
 #include "TapeFollowing.hpp"
 #include "Collection.hpp"
-#include <thread>
 // #include <Heartbeat.h>
 #include <cstdlib>
 //#include <Steering.cpp>
@@ -22,14 +21,17 @@
 #define built_in_LED PC13 //????
 
 #define CAN_COUNTER PB5
+#define CAN_SENSOR PA7
 #define SERVO_CAN_SORTER PA0 //servos must be on TIMER2 pins
-#define CAN_SWITCH PA8
+
+#define NUM_LOOPS 100 //determines the delay of the sorting servo
+#define CAN_THRESHOLD 200
 
 Collection collection(CAN_COUNTER, SERVO_CAN_SORTER);
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 TapeFollowing pid(left_fwd, left_rev, right_fwd, right_rev, LEFT_IR, RIGHT_IR);
 int count = 0;
-
+bool checking = true; // we don't want the loop to detect cans while the servo is flipping.
 
 //Steering wheels(left_fwd, left_rev, right_fwd, right_rev);
 
@@ -42,15 +44,19 @@ void reset_display() {
 
 void collectionCounter() {
   collection.checkPin();
-  display.println(collection.getCanAmount());
-  display.display();
+  for (int i = 0; i < NUM_LOOPS; i++){  //in order to have the loop running while the ramp is flipping, we use the loop as a delay.
+    loop();
+  }
+  collection.returnToNormal();
 }
 
 void setup() {
   pinMode(built_in_LED, OUTPUT);
   delay(300);
-  pinMode(CAN_COUNTER, INPUT_PULLUP);
-  pinMode(CAN_SWITCH, INPUT_PULLUP);
+  //pinMode(CAN_COUNTER, INPUT_PULLUP);
+  //pinMode(CAN_SWITCH, INPUT_PULLUP);
+  pinMode(PB10, OUTPUT); //testing LED to see when can is detected. Will remove later. - hs
+  pinMode(CAN_SENSOR, INPUT_ANALOG); //just take the analog output instead of the digital schmitt trigger output.
   //pinMode(left_fwd, OUTPUT);
   //pinMode(left_rev, OUTPUT);
   //pinMode(right_fwd, OUTPUT);
@@ -62,14 +68,18 @@ void setup() {
   display.println("Hello world!");
   display.display();
   collection.begin();
-  attachInterrupt(digitalPinToInterrupt(CAN_COUNTER), collectionCounter, RISING);
+  //attachInterrupt(digitalPinToInterrupt(CAN_COUNTER), collectionCounter, RISING);
   //wheels.start();
 }
 
 void loop() {
-  
   pid.followTape();
   delay(10);
+  if (checking && analogRead(CAN_SENSOR) < CAN_THRESHOLD) { //if can is detected, disable checks for can and run collectionCounter. 
+    checking = false;                                       // then re-enables the can checking. basically a manual interrupt.
+    collectionCounter();
+    checking = true;
+  }
   if (count % 1000 == 0) {
     digitalWrite(built_in_LED, HIGH);
   } else if (count % 1000 == 500) {
@@ -83,3 +93,4 @@ void loop() {
   }
   count++;
 }
+
