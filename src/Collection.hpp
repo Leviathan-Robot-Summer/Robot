@@ -20,5 +20,5 @@ class Collection {
 
         int getCanAmount();
 
-        void switchLower();
+        void switchManually(int selection);
 };
