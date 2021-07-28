@@ -5,6 +5,7 @@
 
 #define THRESHOLD 525 //seperation between black and white sensor readings
 #define SEPERATION 7 //Spereation width of the 2 sensors
+#define DERIVATIVE_CONST 100 //constant to make sure the derivative isn't 0 from int division
 
 /** Abstraction of the position of the robot relative to the black line its following
  *  Useful for getting an "x" value which is defined as having the black line at x = 0
@@ -117,7 +118,7 @@ class Position {
          *  @author Lukas
          */
         int getDerivative() {
-            return ((x - last_state)) / (no_change + last_state_length);
+            return (DERIVATIVE_CONST * (x - last_state)) / (no_change + last_state_length);
         }
 };
         

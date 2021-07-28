@@ -3,7 +3,6 @@
 #include <Adafruit_SSD1306.h>
 #include "PID.cpp"
 #include <thread>
-#include <Heartbeat.h>
 #include <cstdlib>
 //#include <Steering.cpp>
 
