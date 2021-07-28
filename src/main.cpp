@@ -52,7 +52,7 @@ void setup() {
 void loop() {
   
   pid.followTape();
-  delay(10);
+  delay(1);
   if (count % 1000 == 0) {
     digitalWrite(built_in_LED, HIGH);
   } else if (count % 1000 == 500) {

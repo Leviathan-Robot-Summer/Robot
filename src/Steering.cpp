@@ -7,7 +7,7 @@
 #define MOTOR_MIN 2500 //minimum PWM for the wheels to move the robot
 
 #define NORMAL_PWR 10 // the normal power that the robot should move at
-#define MAX_PWR_FWD 50 // the max power the robot should move forward at
+#define MAX_PWR_FWD 100 // the max power the robot should move forward at
 
 
 /** Object that represents a motor and the allowed controls for it

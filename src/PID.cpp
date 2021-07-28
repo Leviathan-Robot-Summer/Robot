@@ -31,7 +31,7 @@ class TapeFollowing {
         void followTape() {
             kp = 5;//analogRead(PA7) / 10;
             ki = 0; //analogRead(PB0) / 10;
-            kd = analogRead(PB1) / 10;
+            kd = 1;//analogRead(PB1) / 10;
             x = pos.getXValue();
             error = x;
             p = kp * error;
