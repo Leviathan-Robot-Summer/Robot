@@ -45,18 +45,23 @@ void Steering::stop() {
 
 bool Steering::increaseFwdSpeed() {
     bool increased = false;
-        if (right.getPower() == left.getPower()) {
-            if (left.getPower() < MAX_PWR_FWD) {
-                left.power(1 + left.getPower());
-                right.power(1 + right.getPower());
-            }
-            increased = true;
+    if (right.getPower() == left.getPower()) {
+        if (left.getPower() < MAX_PWR_FWD) {
+            left.power(1 + left.getPower());
+            right.power(1 + right.getPower());
         }
+        increased = true;
+    }
     return increased;
 }
 
 int Steering::direction() {
     return left.getPower() - right.getPower();
+}
+
+void Steering::stop() {
+    left.stop();
+    right.stop();
 }
 
 void Steering::showPower(Adafruit_SSD1306 display) {

@@ -6,7 +6,7 @@
 #include "TapeFollowing.hpp"
 
 #define GOAL 0
-#define maxI 200
+#define maxI 0
 
 int d, p, i, x, g, error = 0;
 int lasterr = 0; 
@@ -19,7 +19,8 @@ TapeFollowing::TapeFollowing(PinName left_fwd, PinName left_rev, PinName right_f
 void TapeFollowing::followTape() {
     kp = 5;//analogRead(PA7) / 10;
     ki = 0; //analogRead(PB0) / 10;
-    kd = analogRead(PB1) / 10;
+    kd = 1;
+    
     x = pos.getXValue();
     error = x;
     p = kp * error;

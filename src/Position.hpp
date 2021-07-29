@@ -1,11 +1,15 @@
 #include <Adafruit_SSD1306.h>
 
-#define HISTORY_LEN 1000
-
+/** Abstraction of the position of the robot relative to the black line its following
+ *  Useful for getting an "x" value which is defined as having the black line at x = 0
+ *  Left side is + and right is -
+ * 
+ *  @author Lukas
+ */
 class Position {
 
     int last_state;
-    int history [HISTORY_LEN];
+    int last_state_length;
     int current_index;
 
     void addToHistory(int x);

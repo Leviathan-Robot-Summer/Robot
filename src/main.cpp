@@ -26,10 +26,10 @@
 #define SERVO_CAN_SORTER PA0 //servos must be on TIMER2 pins
 #define DISLODGER PA1
 
-#define SORTING_DELAY 100 //determines the delay of the sorting servo
+#define SORTING_DELAY 1000 //determines the delay of the sorting servo
 #define CAN_THRESHOLD 70
-#define DISLODGE_DELAY 5
-#define STUCK_DELAY 10
+#define DISLODGE_DELAY 50
+#define STUCK_DELAY 100
 
 Collection collection(CAN_COUNTER, SERVO_CAN_SORTER, DISLODGER);
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
@@ -105,7 +105,7 @@ void setup() {
 
 void loop() {
   pid.followTape();
-  delay(10);
+  delay(1);
   if (checking){
     if (analogRead(CAN_SENSOR_BACK) < CAN_THRESHOLD){ // can is in the correct position.
       checking = false;  
