@@ -24,11 +24,14 @@
 #define CAN_SENSOR_BACK PA7
 #define CAN_SENSOR_FRONT PA6
 #define SERVO_CAN_SORTER PA0 //servos must be on TIMER2 pins
+#define DISLODGER PA1
 
-#define NUM_LOOPS 100 //determines the delay of the sorting servo
+#define SORTING_DELAY 100 //determines the delay of the sorting servo
 #define CAN_THRESHOLD 70
+#define DISLODGE_DELAY 5
+#define STUCK_DELAY 10
 
-Collection collection(CAN_COUNTER, SERVO_CAN_SORTER);
+Collection collection(CAN_COUNTER, SERVO_CAN_SORTER, DISLODGER);
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 TapeFollowing pid(left_fwd, left_rev, right_fwd, right_rev, LEFT_IR, RIGHT_IR);
 int count = 0;
@@ -50,7 +53,7 @@ void collectionCounter() {
     loop();
   }
   collection.checkPin();
-  for (int i = 0; i < NUM_LOOPS; i++){  //in order to have the loop running while the ramp is flipping, we use the loop as a delay.
+  for (int i = 0; i < SORTING_DELAY; i++){  //in order to have the loop running while the ramp is flipping, we use the loop as a delay.
     loop();
   }
   collection.returnToNormal();
@@ -60,16 +63,19 @@ void collectionCounter() {
 // function waits a bit to see if the can is coming.
 // if not, then it ...
 void dislodgeCan() {
-  for (int i = 0; i < 10; i++){
+  for (int i = 0; i < STUCK_DELAY; i++){ //wait a bit to see if the can naturally gets unstuck
     loop();
   }
-  if (analogRead(CAN_SENSOR_BACK) < CAN_THRESHOLD){
+  if (analogRead(CAN_SENSOR_BACK) < CAN_THRESHOLD){ 
     canStuck = false;
-    return;
   }
   else {
-    //do something, maybe servo?
+    collection.dislodge();
     digitalWrite(PB11, HIGH);
+    for (int i = 0 ; i < DISLODGE_DELAY; i++){
+      loop();
+    }
+    collection.lodge();
   }
 }
 
@@ -101,13 +107,13 @@ void loop() {
   pid.followTape();
   delay(10);
   if (checking){
-    if (analogRead(CAN_SENSOR_BACK) < CAN_THRESHOLD){
+    if (analogRead(CAN_SENSOR_BACK) < CAN_THRESHOLD){ // can is in the correct position.
       checking = false;  
       canStuck = false;                                      
       collectionCounter();
       checking = true;
     }
-    else if (analogRead(CAN_SENSOR_FRONT) < CAN_THRESHOLD){
+    else if (analogRead(CAN_SENSOR_FRONT) < CAN_THRESHOLD) { // can is possibly stuck.
       checking = false;
       canStuck = true;
       dislodgeCan();
