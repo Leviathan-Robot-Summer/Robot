@@ -6,18 +6,24 @@
 #define UPPER_LEVEL 65
 #define LOWER_LEVEL 110 //35 degrees more than UPPER_LEVEL
 
+#define DISLODGE_DEFAULT 0
+#define DISLODGE_KICK 45
+
 
 // Constructor initializes numberOfCans to 0 and assigns pins for the servo
 // and microswitch.
-Collection::Collection(int CAN_COUNTER, int SERVO_CAN_SORTER) {
+Collection::Collection(int CAN_COUNTER, int SERVO_CAN_SORTER, int DISLODGER) {
     numberOfCans = 0;
     counterPin = CAN_COUNTER;
     servoPin = SERVO_CAN_SORTER;
+    dislodgerPin = DISLODGER;
 }
 
 void Collection::begin() {
     sortingFlap.attach(servoPin);
     sortingFlap.write(DEFAULT_LEVEL);
+    dislodger.attach(dislodgerPin);
+    dislodger.write(DISLODGE_DEFAULT);
 }
 
 // This function is run as an interrupt from setup each time the microswitch for 
@@ -44,6 +50,16 @@ void Collection::checkPin() {
 void Collection::returnToNormal() {
     sortingFlap.write(DEFAULT_LEVEL);
     digitalWrite(PB10, LOW);
+}
+
+// Rotates the servo so as to push the can to the correct place.
+void Collection::dislodge() {
+    dislodger.write(DISLODGE_KICK);
+}
+
+// Returns the dislodge servo to the default position.
+void Collection::lodge() {
+    dislodger.write(DISLODGE_DEFAULT);
 }
 
 int Collection::getCanAmount() {
