@@ -1,3 +1,5 @@
+//THIS CLASS IS OUTDATED. WE USE TAPEFOLLOWING NOW
+
 #include <stdio.h>
 #include <Arduino.h>
 #include <Wire.h>

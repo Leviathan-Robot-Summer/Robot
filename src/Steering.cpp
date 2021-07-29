@@ -59,11 +59,6 @@ int Steering::direction() {
     return left.getPower() - right.getPower();
 }
 
-void Steering::stop() {
-    left.stop();
-    right.stop();
-}
-
 void Steering::showPower(Adafruit_SSD1306 display) {
     display.println(left.getPower());
     display.println(right.getPower());
