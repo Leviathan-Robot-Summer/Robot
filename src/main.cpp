@@ -83,6 +83,7 @@ void dislodgeCan() {
 
 // stops tape following, dumps, then stops for 30 seconds.
 void dump() {
+  digitalWrite(PB10, HIGH);
   pid.stop();
   collection.dump();
   reset_display();
@@ -100,6 +101,7 @@ void setup() {
   pinMode(PB11, OUTPUT); //testing LED to see when can is stuck. Will remove later (probably) - hs
   pinMode(CAN_SENSOR_FRONT, INPUT_ANALOG); //just take the analog output instead of the digital schmitt trigger output.
   pinMode(CAN_SENSOR_BACK, INPUT_ANALOG);
+  pinMode(BOX_DETECTOR, INPUT_PULLUP);
   //pinMode(left_fwd, OUTPUT);
   //pinMode(left_rev, OUTPUT);
   //pinMode(right_fwd, OUTPUT);
@@ -111,6 +113,7 @@ void setup() {
   display.println("Hello world!");
   display.display();
   collection.begin();
+  digitalWrite(PB10, LOW);
   attachInterrupt(digitalPinToInterrupt(BOX_DETECTOR), dump, RISING);
   //attachInterrupt(digitalPinToInterrupt(CAN_COUNTER), collectionCounter, RISING);
   //wheels.start();

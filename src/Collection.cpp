@@ -43,7 +43,7 @@ void Collection::checkPin() {
     else {
         sortingFlap.write(LOWER_LEVEL);
     }
-    digitalWrite(PB10, HIGH);
+    //digitalWrite(PB10, HIGH);
     numberOfCans++;
 }
 
