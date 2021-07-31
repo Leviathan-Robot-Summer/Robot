@@ -20,24 +20,25 @@
 #define left_rev PA_8
 #define built_in_LED PC13 //????
 
-#define CAN_COUNTER PB5
 #define CAN_SENSOR_BACK PA7
 #define CAN_SENSOR_FRONT PA6
 #define SERVO_CAN_SORTER PA0 //servos must be on TIMER2 pins
 #define DISLODGER PA1
+#define DUMPER PA2
+#define BOX_DETECTOR PB5
 
 #define SORTING_DELAY 1000 //determines the delay of the sorting servo
 #define CAN_THRESHOLD 70
 #define DISLODGE_DELAY 50
 #define STUCK_DELAY 100
 
-Collection collection(CAN_COUNTER, SERVO_CAN_SORTER, DISLODGER);
+Collection collection(SERVO_CAN_SORTER, DISLODGER, DUMPER);
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 TapeFollowing pid(left_fwd, left_rev, right_fwd, right_rev, LEFT_IR, RIGHT_IR);
 int count = 0;
 bool checking = true; // we don't want the loop to detect cans while the servo is flipping.
 bool canStuck = false;
-
+bool running = true;
 //Steering wheels(left_fwd, left_rev, right_fwd, right_rev);
 
 void reset_display() {
@@ -79,6 +80,17 @@ void dislodgeCan() {
   }
 }
 
+
+// stops tape following, dumps, then stops for 30 seconds.
+void dump() {
+  pid.stop();
+  collection.dump();
+  reset_display();
+  display.println("Done :) !");
+  display.display();
+  delay(30000);
+}
+
 void setup() {
   pinMode(built_in_LED, OUTPUT);
   delay(300);
@@ -99,6 +111,7 @@ void setup() {
   display.println("Hello world!");
   display.display();
   collection.begin();
+  attachInterrupt(digitalPinToInterrupt(BOX_DETECTOR), dump, RISING);
   //attachInterrupt(digitalPinToInterrupt(CAN_COUNTER), collectionCounter, RISING);
   //wheels.start();
 }
