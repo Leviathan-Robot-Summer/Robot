@@ -9,17 +9,21 @@
 #define DISLODGE_DEFAULT 0
 #define DISLODGE_KICK 45
 
-#define DUMPER_DEFAULT 0
+#define DUMPER_DEFAULT 10
 #define DUMPER_RELEASED 45
+
+#define V_DEFAULT 10
+#define V_RETRACTED 80
 
 
 // Constructor initializes numberOfCans to 0 and assigns pins for the servo
 // and microswitch.
-Collection::Collection(int SERVO_CAN_SORTER, int DISLODGER, int DUMPER) {
+Collection::Collection(int SERVO_CAN_SORTER, int DISLODGER, int DUMPER, int V) {
     numberOfCans = 0;
     servoPin = SERVO_CAN_SORTER;
     dislodgerPin = DISLODGER;
     dumperPin = DUMPER;
+    vPin = V;
 }
 
 void Collection::begin() {
@@ -29,6 +33,8 @@ void Collection::begin() {
     dislodger.write(DISLODGE_DEFAULT);
     dumper.attach(dumperPin);
     dumper.write(DUMPER_DEFAULT);
+    V.attach(vPin);
+    V.write(V_DEFAULT);
     }
 
 // This function is run as an interrupt from setup each time the microswitch for 
@@ -70,7 +76,13 @@ void Collection::lodge() {
 // Returns the dumping servo to the released position.
 void Collection::dump() {
     dumper.write(DUMPER_RELEASED);
+    digitalWrite(PB10, LOW);
 }
+
+void Collection::retractV() {
+    V.write(V_RETRACTED);
+}
+
 int Collection::getCanAmount() {
     return numberOfCans;
 }

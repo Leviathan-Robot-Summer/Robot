@@ -5,14 +5,16 @@ class Collection {
     int servoPin;
     int dislodgerPin;
     int dumperPin;
+    int vPin;
     Servo sortingFlap;
     Servo dislodger;
     Servo dumper;
+    Servo V;
 
     public:
         // Constructor initializes numberOfCans to 0 and assigns pins for the servo
         // and microswitch.
-        Collection(int SERVO_CAN_SORTER, int DISLODGER, int DUMPER);
+        Collection(int SERVO_CAN_SORTER, int DISLODGER, int DUMPER, int V);
 
         void begin();
 
@@ -28,6 +30,8 @@ class Collection {
         void lodge();
 
         void dump();
+
+        void retractV();
 
         int getCanAmount();
 

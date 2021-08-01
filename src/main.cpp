@@ -25,20 +25,23 @@
 #define SERVO_CAN_SORTER PA0 //servos must be on TIMER2 pins
 #define DISLODGER PA1
 #define DUMPER PA2
-#define BOX_DETECTOR PB5
+#define V PA3
+#define BOX_DETECTOR PB4
 
 #define SORTING_DELAY 1000 //determines the delay of the sorting servo
 #define CAN_THRESHOLD 70
 #define DISLODGE_DELAY 50
 #define STUCK_DELAY 100
+#define V_DELAY 40000 //amount of time after initial startup until V retracts. In milliseconds.
 
-Collection collection(SERVO_CAN_SORTER, DISLODGER, DUMPER);
+Collection collection(SERVO_CAN_SORTER, DISLODGER, DUMPER, V);
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 TapeFollowing pid(left_fwd, left_rev, right_fwd, right_rev, LEFT_IR, RIGHT_IR);
 int count = 0;
 bool checking = true; // we don't want the loop to detect cans while the servo is flipping.
 bool canStuck = false;
 bool running = true;
+unsigned long init_time;
 //Steering wheels(left_fwd, left_rev, right_fwd, right_rev);
 
 void reset_display() {
@@ -84,12 +87,15 @@ void dislodgeCan() {
 // stops tape following, dumps, then stops for 30 seconds.
 void dump() {
   digitalWrite(PB10, HIGH);
+  running = false;
   pid.stop();
+  delay(1000);
   collection.dump();
   reset_display();
   display.println("Done :) !");
   display.display();
-  delay(30000);
+  //delay(30000);
+  //running = false;
 }
 
 void setup() {
@@ -101,7 +107,7 @@ void setup() {
   pinMode(PB11, OUTPUT); //testing LED to see when can is stuck. Will remove later (probably) - hs
   pinMode(CAN_SENSOR_FRONT, INPUT_ANALOG); //just take the analog output instead of the digital schmitt trigger output.
   pinMode(CAN_SENSOR_BACK, INPUT_ANALOG);
-  pinMode(BOX_DETECTOR, INPUT_PULLUP);
+  pinMode(BOX_DETECTOR, INPUT_PULLDOWN);
   //pinMode(left_fwd, OUTPUT);
   //pinMode(left_rev, OUTPUT);
   //pinMode(right_fwd, OUTPUT);
@@ -114,12 +120,17 @@ void setup() {
   display.display();
   collection.begin();
   digitalWrite(PB10, LOW);
-  attachInterrupt(digitalPinToInterrupt(BOX_DETECTOR), dump, RISING);
+  attachInterrupt(digitalPinToInterrupt(BOX_DETECTOR), dump, FALLING);
+  init_time = millis();
   //attachInterrupt(digitalPinToInterrupt(CAN_COUNTER), collectionCounter, RISING);
   //wheels.start();
 }
 
 void loop() {
+  if (!running) {
+    pid.stop();
+    return;
+  }
   pid.followTape();
   delay(1);
   if (checking){
@@ -147,6 +158,7 @@ void loop() {
     pid.showValues(display);
     display.display();
   }
+  if (millis() - init_time > V_DELAY) collection.retractV();
   count++;
 }
 
