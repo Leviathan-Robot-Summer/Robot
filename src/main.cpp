@@ -17,7 +17,7 @@
 #define right_rev PA_2
 #define left_fwd PA_9
 #define left_rev PA_8
-#define built_in_LED PB2 //PC13 for old BP, PB2 for new BP
+#define built_in_LED PC13 //PC13 for old BP, PB2 for new BP
 
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 TapeFollowing pid(left_fwd, left_rev, right_fwd, right_rev, LEFT_IR, RIGHT_IR);
