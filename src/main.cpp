@@ -22,17 +22,17 @@
 
 #define CAN_SENSOR_BACK PA7
 #define CAN_SENSOR_FRONT PA6
-#define SERVO_CAN_SORTER PA0 //servos must be on TIMER2 pins
-#define DISLODGER PA1
+#define SERVO_CAN_SORTER PA1 //servos must be on TIMER2 pins
+#define DISLODGER PA0
 #define DUMPER PA2
 #define V PA3
-#define BOX_DETECTOR PB4
+#define BOX_DETECTOR PB5
 
 #define SORTING_DELAY 1000 //determines the delay of the sorting servo
-#define CAN_THRESHOLD 70
-#define DISLODGE_DELAY 50
+#define CAN_THRESHOLD 700
+#define DISLODGE_DELAY 500
 #define STUCK_DELAY 100
-#define V_DELAY 40000 //amount of time after initial startup until V retracts. In milliseconds.
+#define V_DELAY 50000 //amount of time after initial startup until V retracts. In milliseconds.
 
 Collection collection(SERVO_CAN_SORTER, DISLODGER, DUMPER, V);
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
@@ -52,7 +52,7 @@ void reset_display() {
 }
 
 void collectionCounter() {
-  digitalWrite(PB11, LOW);
+  //digitalWrite(PB11, LOW);
   for (int i = 0; i < 35; i++){
     loop();
   }
@@ -61,6 +61,9 @@ void collectionCounter() {
     loop();
   }
   collection.returnToNormal();
+  for (int i = 0; i < DISLODGE_DELAY; i++) {
+    loop();
+  }
 }
 
 // should only run if front sensor detects a can but back doesn't.
@@ -98,6 +101,14 @@ void dump() {
   //running = false;
 }
 
+void retractAndDetachV() {
+  collection.retractV();
+  for (int i = 0 ; i < DISLODGE_DELAY; i++){
+    loop();
+  }
+  collection.detachV();
+}
+
 void setup() {
   pinMode(built_in_LED, OUTPUT);
   delay(300);
@@ -107,7 +118,7 @@ void setup() {
   pinMode(PB11, OUTPUT); //testing LED to see when can is stuck. Will remove later (probably) - hs
   pinMode(CAN_SENSOR_FRONT, INPUT_ANALOG); //just take the analog output instead of the digital schmitt trigger output.
   pinMode(CAN_SENSOR_BACK, INPUT_ANALOG);
-  pinMode(BOX_DETECTOR, INPUT_PULLDOWN);
+  pinMode(BOX_DETECTOR, INPUT);
   //pinMode(left_fwd, OUTPUT);
   //pinMode(left_rev, OUTPUT);
   //pinMode(right_fwd, OUTPUT);
@@ -140,12 +151,12 @@ void loop() {
       collectionCounter();
       checking = true;
     }
-    else if (analogRead(CAN_SENSOR_FRONT) < CAN_THRESHOLD) { // can is possibly stuck.
+    /*else if (analogRead(CAN_SENSOR_FRONT) < CAN_THRESHOLD) { // can is possibly stuck.
       checking = false;
       canStuck = true;
       dislodgeCan();
       checking = true;
-    }
+    }*/
   }
   if (count % 1000 == 0) {
     digitalWrite(built_in_LED, HIGH);
@@ -154,6 +165,7 @@ void loop() {
   }
   if (count % 100 == 0) {
     reset_display();
+    display.println(analogRead(CAN_SENSOR_BACK));
     display.println(count / 100);
     pid.showValues(display);
     display.display();

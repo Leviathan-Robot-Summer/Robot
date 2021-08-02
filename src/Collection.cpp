@@ -2,18 +2,18 @@
 #include <Servo.h>
 #include "Collection.hpp"
 
-#define DEFAULT_LEVEL 25
-#define UPPER_LEVEL 65
-#define LOWER_LEVEL 110 //35 degrees more than UPPER_LEVEL
+#define DEFAULT_LEVEL 97
+#define UPPER_LEVEL 168
+#define LOWER_LEVEL 121 //35 degrees more than UPPER_LEVEL
 
 #define DISLODGE_DEFAULT 0
 #define DISLODGE_KICK 45
 
-#define DUMPER_DEFAULT 10
-#define DUMPER_RELEASED 45
+#define DUMPER_DEFAULT 160
+#define DUMPER_RELEASED 50
 
-#define V_DEFAULT 10
-#define V_RETRACTED 80
+#define V_DEFAULT 15
+#define V_RETRACTED 160
 
 
 // Constructor initializes numberOfCans to 0 and assigns pins for the servo
@@ -60,7 +60,7 @@ void Collection::checkPin() {
 // a delay. Then, we return the sortingFlap to default in a seperate function.
 void Collection::returnToNormal() {
     sortingFlap.write(DEFAULT_LEVEL);
-    digitalWrite(PB10, LOW);
+    //digitalWrite(PB10, LOW);
 }
 
 // Rotates the servo so as to push the can to the correct place.
@@ -81,6 +81,10 @@ void Collection::dump() {
 
 void Collection::retractV() {
     V.write(V_RETRACTED);
+}
+
+void Collection::detachV() {
+    V.detach();
 }
 
 int Collection::getCanAmount() {

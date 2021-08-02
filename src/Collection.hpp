@@ -33,6 +33,8 @@ class Collection {
 
         void retractV();
 
+        void detachV();
+
         int getCanAmount();
 
         void switchManually(int selection);
