@@ -33,6 +33,7 @@
 #define DISLODGE_DELAY 500
 #define STUCK_DELAY 100
 #define V_DELAY 50000 //amount of time after initial startup until V retracts. In milliseconds.
+#define V_DETACH_DELAY 5000
 
 Collection collection(SERVO_CAN_SORTER, DISLODGER, DUMPER, V);
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
@@ -41,6 +42,7 @@ int count = 0;
 bool checking = true; // we don't want the loop to detect cans while the servo is flipping.
 bool canStuck = false;
 bool running = true;
+bool retracting = false;
 unsigned long init_time;
 //Steering wheels(left_fwd, left_rev, right_fwd, right_rev);
 
@@ -103,7 +105,8 @@ void dump() {
 
 void retractAndDetachV() {
   collection.retractV();
-  for (int i = 0 ; i < DISLODGE_DELAY; i++){
+  retracting = true;
+  for (int i = 0 ; i < V_DETACH_DELAY; i++){
     loop();
   }
   collection.detachV();
@@ -170,7 +173,7 @@ void loop() {
     pid.showValues(display);
     display.display();
   }
-  if (millis() - init_time > V_DELAY) collection.retractV();
+  if (millis() - init_time > V_DELAY && !retracting) retractAndDetachV();
   count++;
 }
 
