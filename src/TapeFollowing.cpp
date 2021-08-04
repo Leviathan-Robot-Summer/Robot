@@ -42,9 +42,10 @@ void TapeFollowing::followTape() {
 
 void TapeFollowing::showValues(Adafruit_SSD1306 display) {
     display.println(x);
-    display.println(p);
-    display.println(d);
+    //display.println(p);
+    //display.println(d);
     display.println(g);
+    //pos.showLR(display);
     Wheels.showPower(display);
     //pos.showLR(display);
     

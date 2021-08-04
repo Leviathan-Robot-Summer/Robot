@@ -20,8 +20,8 @@
 #define left_rev PA_8
 #define built_in_LED PC13 //????
 
-#define CAN_SENSOR_BACK PA7
-#define CAN_SENSOR_FRONT PA6
+#define CAN_SENSOR_BACK PA6
+#define CAN_SENSOR_FRONT PA7
 #define SERVO_CAN_SORTER PA1 //servos must be on TIMER2 pins
 #define DISLODGER PA0
 #define DUMPER PA2
@@ -29,13 +29,13 @@
 #define BOX_DETECTOR PB5
 
 #define SORTING_DELAY 1000 //determines the delay of the sorting servo
-#define CAN_THRESHOLD 700
+#define CAN_THRESHOLD 400
 #define DISLODGE_DELAY 500
 #define STUCK_DELAY 100
 #define V_DELAY 50000 //amount of time after initial startup until V retracts. In milliseconds.
 #define V_DETACH_DELAY 5000
 
-
+#define NUMBER_OF_CHECKS_DUMP 10
 #define SKYCRANE_BRAKE PA_10
 #define SKYCRANE_DISTANCE_PING PB12
 #define SKYCRANE_DISTANCE_ECHO PB13
@@ -113,6 +113,10 @@ int getDistance() {
 // stops tape following, dumps, then stops for 30 seconds.
 void dump() {
   digitalWrite(PB10, HIGH);
+  for (int i = 0; i < NUMBER_OF_CHECKS_DUMP; i++) {
+    delay(1);
+    if (digitalRead(BOX_DETECTOR) == HIGH) return;
+  }
   running = false;
   pid.stop();
   delay(1000);
@@ -212,7 +216,7 @@ void loop() {
   pid.followTape();
   delay(1);
   if (checking){
-    if (analogRead(CAN_SENSOR_BACK) < CAN_THRESHOLD){ // can is in the correct position.
+    if (analogRead(CAN_SENSOR_BACK) > CAN_THRESHOLD){ // can is in the correct position.
       checking = false;  
       canStuck = false;                                      
       collectionCounter();

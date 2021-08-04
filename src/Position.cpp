@@ -4,7 +4,7 @@
 #include <Adafruit_SSD1306.h>
 #include "Position.hpp"
 
-#define THRESHOLD 500 //separation between black and white sensor readings
+#define THRESHOLD 27 //separation between black and white sensor readings
 #define SEPERATION 7 //separation width of the 2 sensors
 #define DERIVATIVE_CONST 75 //constant to make sure the derivative isn't 0 from int division.
 
@@ -75,8 +75,9 @@ int Position::read() {
  * @author Lukas
  */ 
 void Position::showLR(Adafruit_SSD1306 display) {
-    display.println(rr);
-    display.println(rl);
+    display.println(int(rr));
+    //display.println("\n");
+    display.println(int(rl));
 }
 
 
