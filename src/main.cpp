@@ -108,7 +108,7 @@ int getDistance() {
   int distance = duration * 0.034 / 2; // Speed of sound wave divided by 2 (go and back)
   
   return distance;
-  
+}
 
 // stops tape following, dumps, then stops for 30 seconds.
 void dump() {
@@ -188,6 +188,7 @@ void loop() {
       display.println(count);
       display.println(distance);
       display.display();
+     }
      if (distance < 5) {
         pwm_start(SKYCRANE_BRAKE, 1000, 0, RESOLUTION_12B_COMPARE_FORMAT);
         display.println("TOUCH DOWN");
@@ -200,8 +201,8 @@ void loop() {
         pwm_start(SKYCRANE_BRAKE, 1000, 0, RESOLUTION_12B_COMPARE_FORMAT);
     }
     count++;
-    }   
-  init_time = millis()
+  }   
+  init_time = millis();
  
   if (!running) {
     pid.stop();
@@ -234,9 +235,8 @@ void loop() {
     display.println(analogRead(CAN_SENSOR_BACK));
     display.println(count / 100);
     pid.showValues(display);
+  }
 
   if (millis() - init_time > V_DELAY && !retracting) retractAndDetachV();
   count++;
 }
-
- 
