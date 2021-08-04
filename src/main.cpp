@@ -36,6 +36,9 @@
 #define V_DETACH_DELAY 5000
 
 #define NUMBER_OF_CHECKS_DUMP 10
+#define SKYCRANE_BRAKE PA_10
+#define SKYCRANE_DISTANCE_PING PB12
+#define SKYCRANE_DISTANCE_ECHO PB13
 
 Collection collection(SERVO_CAN_SORTER, DISLODGER, DUMPER, V);
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
@@ -45,6 +48,7 @@ bool checking = true; // we don't want the loop to detect cans while the servo i
 bool canStuck = false;
 bool running = true;
 bool retracting = false;
+bool skyCrane;
 unsigned long init_time;
 //Steering wheels(left_fwd, left_rev, right_fwd, right_rev);
 
@@ -90,6 +94,21 @@ void dislodgeCan() {
   }
 }
 
+int getDistance() {
+  // Clears the trigPin condition
+  digitalWrite(SKYCRANE_DISTANCE_PING, LOW);
+  delayMicroseconds(2);
+  // Sets the trigPin HIGH (ACTIVE) for 10 microseconds
+  digitalWrite(SKYCRANE_DISTANCE_PING, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(SKYCRANE_DISTANCE_PING, LOW);
+  // Reads the echoPin, returns the sound wave travel time in microseconds
+  int duration = pulseIn(SKYCRANE_DISTANCE_ECHO, HIGH);
+  // Calculating the distance
+  int distance = duration * 0.034 / 2; // Speed of sound wave divided by 2 (go and back)
+  
+  return distance;
+}
 
 // stops tape following, dumps, then stops for 30 seconds.
 void dump() {
@@ -124,7 +143,12 @@ void setup() {
   //pinMode(CAN_COUNTER, INPUT_PULLUP);
   //pinMode(CAN_SWITCH, INPUT_PULLUP);
   pinMode(PB10, OUTPUT); //testing LED to see when can is detected. Will remove later. - hs
-  pinMode(PB11, OUTPUT); //testing LED to see when can is stuck. Will remove later (probably) - hs
+  pinMode(PB11, OUTPUT); //testing LED to see when can is stuck. Will remove later (probably) - hsw
+
+  pinMode(SKYCRANE_DISTANCE_ECHO, INPUT_PULLDOWN);
+  pinMode(SKYCRANE_DISTANCE_PING, INPUT_PULLDOWN);
+  
+
   pinMode(CAN_SENSOR_FRONT, INPUT_ANALOG); //just take the analog output instead of the digital schmitt trigger output.
   pinMode(CAN_SENSOR_BACK, INPUT_ANALOG);
   pinMode(BOX_DETECTOR, INPUT);
@@ -139,18 +163,56 @@ void setup() {
   display.println("Hello world!");
   display.display();
   collection.begin();
+
+  pwm_start(SKYCRANE_BRAKE, 1000, 0, RESOLUTION_12B_COMPARE_FORMAT);
   digitalWrite(PB10, LOW);
   attachInterrupt(digitalPinToInterrupt(BOX_DETECTOR), dump, FALLING);
-  init_time = millis();
+  
   //attachInterrupt(digitalPinToInterrupt(CAN_COUNTER), collectionCounter, RISING);
   //wheels.start();
+  getDistance();
+  skyCrane = true;
+  delay(100);
 }
 
 void loop() {
+
+  while (skyCrane) {   
+    int distance = getDistance();
+    while (distance == 0) {
+      reset_display();
+      distance = getDistance();
+      display.println(count);
+      display.println(distance);
+      display.display();
+    }
+    
+     if (count % 1 == 0) {
+      reset_display();
+      display.println(count);
+      display.println(distance);
+      display.display();
+     }
+     if (distance < 5) {
+        pwm_start(SKYCRANE_BRAKE, 1000, 0, RESOLUTION_12B_COMPARE_FORMAT);
+        display.println("TOUCH DOWN");
+        display.display();
+        delay(2000);
+        skyCrane = false;
+    } else if (distance < 20) {
+        pwm_start(SKYCRANE_BRAKE, 1000, 4095, RESOLUTION_12B_COMPARE_FORMAT);
+    } else {
+        pwm_start(SKYCRANE_BRAKE, 1000, 0, RESOLUTION_12B_COMPARE_FORMAT);
+    }
+    count++;
+  }   
+  init_time = millis();
+ 
   if (!running) {
     pid.stop();
     return;
   }
+    
   pid.followTape();
   delay(1);
   if (checking){
@@ -177,9 +239,8 @@ void loop() {
     display.println(analogRead(CAN_SENSOR_BACK));
     display.println(count / 100);
     pid.showValues(display);
-    display.display();
   }
+
   if (millis() - init_time > V_DELAY && !retracting) retractAndDetachV();
   count++;
 }
-
