@@ -17,7 +17,7 @@ TapeFollowing::TapeFollowing(PinName left_fwd, PinName left_rev, PinName right_f
 }
 
 void TapeFollowing::followTape() {
-    kp = 5;//analogRead(PA7) / 10;
+    kp = 5 ;//analogRead(PA7) / 10;
     ki = 0; //analogRead(PB0) / 10;
     kd = 1;
     

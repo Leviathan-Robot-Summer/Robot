@@ -2,21 +2,28 @@
 #include <Servo.h>
 #include "Collection.hpp"
 
-#define DEFAULT_LEVEL 25
-#define UPPER_LEVEL 65
-#define LOWER_LEVEL 110 //35 degrees more than UPPER_LEVEL
+#define DEFAULT_LEVEL 97
+#define UPPER_LEVEL 168
+#define LOWER_LEVEL 121 //35 degrees more than UPPER_LEVEL
 
 #define DISLODGE_DEFAULT 0
 #define DISLODGE_KICK 45
 
+#define DUMPER_DEFAULT 160
+#define DUMPER_RELEASED 50
+
+#define V_DEFAULT 15
+#define V_RETRACTED 160
+
 
 // Constructor initializes numberOfCans to 0 and assigns pins for the servo
 // and microswitch.
-Collection::Collection(int CAN_COUNTER, int SERVO_CAN_SORTER, int DISLODGER) {
+Collection::Collection(int SERVO_CAN_SORTER, int DISLODGER, int DUMPER, int V) {
     numberOfCans = 0;
-    counterPin = CAN_COUNTER;
     servoPin = SERVO_CAN_SORTER;
     dislodgerPin = DISLODGER;
+    dumperPin = DUMPER;
+    vPin = V;
 }
 
 void Collection::begin() {
@@ -24,7 +31,11 @@ void Collection::begin() {
     sortingFlap.write(DEFAULT_LEVEL);
     dislodger.attach(dislodgerPin);
     dislodger.write(DISLODGE_DEFAULT);
-}
+    dumper.attach(dumperPin);
+    dumper.write(DUMPER_DEFAULT);
+    V.attach(vPin);
+    V.write(V_DEFAULT);
+    }
 
 // This function is run as an interrupt from setup each time the microswitch for 
 // can-counting is pressed. If the number of cans is less than 3, the sortingFlap goes
@@ -38,7 +49,7 @@ void Collection::checkPin() {
     else {
         sortingFlap.write(LOWER_LEVEL);
     }
-    digitalWrite(PB10, HIGH);
+    //digitalWrite(PB10, HIGH);
     numberOfCans++;
 }
 
@@ -49,7 +60,7 @@ void Collection::checkPin() {
 // a delay. Then, we return the sortingFlap to default in a seperate function.
 void Collection::returnToNormal() {
     sortingFlap.write(DEFAULT_LEVEL);
-    digitalWrite(PB10, LOW);
+    //digitalWrite(PB10, LOW);
 }
 
 // Rotates the servo so as to push the can to the correct place.
@@ -60,6 +71,20 @@ void Collection::dislodge() {
 // Returns the dislodge servo to the default position.
 void Collection::lodge() {
     dislodger.write(DISLODGE_DEFAULT);
+}
+
+// Returns the dumping servo to the released position.
+void Collection::dump() {
+    dumper.write(DUMPER_RELEASED);
+    digitalWrite(PB10, LOW);
+}
+
+void Collection::retractV() {
+    V.write(V_RETRACTED);
+}
+
+void Collection::detachV() {
+    V.detach();
 }
 
 int Collection::getCanAmount() {
