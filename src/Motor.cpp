@@ -3,9 +3,7 @@
 #define MOTORFREQ 1000
 #define MOTOR_MAX 4096
 #define MOTOR_MIN 2500
-#define BASESPEED 1500 
-
-#define NORMAL_PWR 10
+#define NORMAL_PWR 15
 #define MAX_PWR_FWD 100
 
 int pwm_constant = (MOTOR_MAX - MOTOR_MIN) / 100;

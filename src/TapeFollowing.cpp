@@ -6,10 +6,10 @@
 #include "TapeFollowing.hpp"
 
 #define GOAL 0
-#define maxI 0
+#define maxI 100
 
 int d, p, i, x, g, error = 0;
-int lasterr = 0; 
+int lasterr = 0;
 
 TapeFollowing::TapeFollowing(PinName left_fwd, PinName left_rev, PinName right_fwd, PinName right_rev, int left_sensor, int right_sensor) {
     pos.setSensors(left_sensor, right_sensor);
@@ -17,18 +17,27 @@ TapeFollowing::TapeFollowing(PinName left_fwd, PinName left_rev, PinName right_f
 }
 
 void TapeFollowing::followTape() {
-    kp = 5 ;//analogRead(PA7) / 10;
+    kp = 5;//analogRead(PA7) / 10;
     ki = 0; //analogRead(PB0) / 10;
     kd = 1;
-    
+
     x = pos.getXValue();
+    /*if (x != 0 && pos.getNoChange() > 5000) {
+        Wheels.start();
+        pos.reset();
+        delay(500);
+
+        return;
+    }*/
     error = x;
     p = kp * error;
     d = kd*pos.getDerivative();
-    i += ki *error;
-    i = 0;
-    //if (i > maxI){ i = maxI;}
-    //if (i < -1*maxI){i = -maxI;}
+    i = ki *error * (pos.getNoChange() / 700);
+    if (i > maxI){ i = maxI;}
+    if (i < -1*maxI){i = -maxI;}
+    if (error == 0) {
+        i = 0;
+    }
     g = p + d + i;
     lasterr = error;
     /*if (g != 0) {Wheels.steer(g);}
@@ -46,8 +55,8 @@ void TapeFollowing::showValues(Adafruit_SSD1306 display) {
     //display.println(d);
     display.println(g);
     //pos.showLR(display);
-    Wheels.showPower(display);
-    //pos.showLR(display);
+    //Wheels.showPower(display);
+    pos.showLR(display);
     
 }
 

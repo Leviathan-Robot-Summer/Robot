@@ -98,5 +98,13 @@ int Position::getDerivative() {
     return (DERIVATIVE_CONST * (x - last_state)) / (no_change + last_state_length);
 }
 
+int Position::getNoChange() {
+    return no_change;
+}
+
+void Position::reset() {
+    no_change = 0;
+}
+
 //test comment
 

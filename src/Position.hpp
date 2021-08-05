@@ -33,4 +33,7 @@ class Position {
         int getDerivative();
 
         //~Position();
+
+        int getNoChange();
+        void reset();
 };

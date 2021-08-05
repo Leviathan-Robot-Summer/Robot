@@ -1,19 +1,20 @@
 #include <Arduino.h>
 #include <Servo.h>
 #include "Collection.hpp"
+#include "Configuration/Robot3.hpp" //CHANGE THIS FILE DEPENDING ON THE ROBOT!
 
-#define DEFAULT_LEVEL 97
-#define UPPER_LEVEL 168
-#define LOWER_LEVEL 121 //35 degrees more than UPPER_LEVEL
+// #define DEFAULT_LEVEL 97
+// #define UPPER_LEVEL 168
+// #define LOWER_LEVEL 121 //35 degrees more than UPPER_LEVEL
 
-#define DISLODGE_DEFAULT 0
-#define DISLODGE_KICK 45
+// #define DISLODGE_DEFAULT 0
+// #define DISLODGE_KICK 45
 
-#define DUMPER_DEFAULT 160
-#define DUMPER_RELEASED 50
+// #define DUMPER_DEFAULT 130
+// #define DUMPER_RELEASED 0
 
-#define V_DEFAULT 15
-#define V_RETRACTED 160
+// #define V_DEFAULT 15
+// #define V_RETRACTED 160
 
 
 // Constructor initializes numberOfCans to 0 and assigns pins for the servo
